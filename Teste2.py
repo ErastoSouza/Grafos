@@ -137,7 +137,7 @@ class equipe:
   print(f"Tentando apagar {fogo_atual} de fogo com {self.capacidade_atual} de água.")
 
   if fogo_atual > self.capacidade_atual:
-   grafo[self.posicao][0][0] -= self.capacidade_atual
+   grafo[self.posicao][0][0] = max(0,self.capacidade_atual-grafo[self.posicao][0][0])
    print(f"Água insuficiente. Fogo reduzido para {grafo[self.posicao][0][0]}.")
    self.capacidade_atual = 0
    print("Água acabou.")
@@ -175,19 +175,19 @@ def ta_pegando_fogo(grafo):
     return 1
  return 0
 
-# Cria um grafo ponderado. {Nome do vertice : ((valor dentro do vertice, posto, lago, estado do fogo(0 = se nao pegou fogo, 1 se esta pegando fogo, -1 se já pegou fogo, 2 se queimou)))
+# Cria um grafo ponderado. {Nome do vertice : ((valor dentro do vertice, posto, lago, estado do fogo(0 = se nao pegou fogo, 1 se esta pegando fogo, -1 se já pegou fogo, 2 se queimou), Quantidade de combustivel queimado))
 
 
 grafo = {
- 'A': [[4, False, False, 0], [('B', 5), ('C', 2), ('F', 3), ('I', 5)]],
- 'B': [[4, False, False, 0], [('A', 5), ('D', 1), ('E', 3)]],
- 'C': [[4, False, False, 0], [('A', 2), ('D', 4), ('E', 1), ('G', 3)]], 
- 'D': [[4, False, False, 0], [('B', 1), ('C', 4), ('H', 4)]], 
- 'E': [[3, False, False, 0], [('B', 3), ('C', 1), ('F', 4), ('G', 2)]], 
- 'F': [[2, False, False, 0], [('A', 3), ('E', 4)]],
- 'G': [[3, False, False, 0], [('C', 3), ('E', 2), ('H', 1)]], 
- 'H': [[5, False, False, 0], [('D', 4), ('G', 1), ('I', 3)]], 
- 'I': [[2, False, False, 0], [('A', 5), ('H', 3)]]  
+ 'A': [[4, False, False, 0, 0], [('B', 5), ('C', 2), ('F', 3), ('I', 5)]],
+ 'B': [[4, False, False, 0, 0], [('A', 5), ('D', 1), ('E', 3)]],
+ 'C': [[4, False, False, 0, 0], [('A', 2), ('D', 4), ('E', 1), ('G', 3)]], 
+ 'D': [[4, False, False, 0, 0], [('B', 1), ('C', 4), ('H', 4)]], 
+ 'E': [[3, False, False, 0, 0], [('B', 3), ('C', 1), ('F', 4), ('G', 2)]], 
+ 'F': [[2, False, False, 0, 0], [('A', 3), ('E', 4)]],
+ 'G': [[3, False, False, 0, 0], [('C', 3), ('E', 2), ('H', 1)]], 
+ 'H': [[5, False, False, 0, 0], [('D', 4), ('G', 1), ('I', 3)]], 
+ 'I': [[2, False, False, 0, 0], [('A', 5), ('H', 3)]]  
 }
 
 qlagos = 0
@@ -218,7 +218,14 @@ while parada:
  for time in equipes:
   time.andar(grafo)
  parada = ta_pegando_fogo(grafo)
+ for chave in grafo.keys():
+  if grafo[chave][0][3] and grafo[chave][0][0]>0:
+   grafo[chave][0][0] -= 1
+   grafo[chave][0][4] += 1
+   if grafo[chave][0][0] == 0 and not grafo[chave][0][3] == -1:
+    grafo[chave][0][3] = 2
 
+   
  propagacao(grafo)
 
 
