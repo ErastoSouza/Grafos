@@ -57,9 +57,10 @@ class equipe:
   self.capacidade = capacidade
   self.caminho = None
   self.capacidade_atual = capacidade
+  self.agua_usada = 0
 
  def __repr__(self):
-  return f"Equipe(posicao='{self.posicao}', capacidade_atual={self.capacidade_atual}/{self.capacidade})"
+  return f"Equipe(posicao='{self.posicao}', capacidade_atual={self.capacidade_atual}/{self.capacidade}, água={self.agua_usada})"
 
  def andar(self, grafo):
   print(f"\n--- Equipe em {self.posicao} ---")
@@ -135,12 +136,14 @@ class equipe:
 
   if fogo_atual > self.capacidade_atual:
    grafo[self.posicao][0][0] -= self.capacidade_atual
+   self.agua_usada += self.capacidade_atual
    print(f"Água insuficiente. Fogo reduzido para {grafo[self.posicao][0][0]}.")
    self.capacidade_atual = 0
    print("Água acabou.")
 
   else:
    self.capacidade_atual -= fogo_atual
+   self.agua_usada += fogo_atual
    grafo[self.posicao][0][0] = 0
    grafo[self.posicao][0][3] = -1
    print(f"Fogo em {self.posicao} apagado!")
@@ -173,7 +176,12 @@ def ta_pegando_fogo(grafo):
     return 1
  return 0
 
-def print_grafo(grafo):
+def relatorio(grafo, equipes, turno):
+  queimados, agua_usada = 0, 0
+  print()
+  print("============================================================================")
+  print("            Resumo de como ficou a situação final do grafo")
+  print("============================================================================")
   print()
   for vertice in grafo:
     print(f"Vertice {vertice} ", end="")
@@ -184,9 +192,18 @@ def print_grafo(grafo):
     elif grafo[vertice][0][3] == 0:
       print("nem sequer pegou fogo, parabéns pessoal🎉")
     elif grafo[vertice][0][3] == -1:
-      print(f"pegou fogo durante {grafo[vertice][0][4]} turnos, porém foi apagado a tempo restando: {grafo[vertice][0][0]} de combustivel😥")
+      print(f"pegou fogo durante {grafo[vertice][0][4]} turnos, porém foi apagado a tempo😥")
     elif grafo[vertice][0][3] == 2:
       print(f"pegou fogo durante {grafo[vertice][0][4]} turnos, e queimou completamente😿")
+      queimados +=1
+  vertices = grafo.keys()
+  for equipe in equipes:
+   agua_usada += equipe.agua_usada
+  print()
+  print(f"Dos {len(vertices)} vertices foram salvos {len(vertices)-queimados} e foram queimados {queimados}, para isso foram usados {agua_usada} Litros de água, em {turno} turnos")
+
+  print()
+  print("============================================================================")
   
 # Cria um grafo ponderado. {Nome do vertice : ((valor dentro do vertice, posto, lago, estado do fogo(0 = se nao pegou fogo, 1 se esta pegando fogo, -1 se já pegou fogo, 2 se queimou), Quantidade de combustivel queimado))
 grafo = {
@@ -195,16 +212,16 @@ grafo = {
  'C': [[4, False, False, 0, 0], [('A', 2), ('D', 4), ('E', 1), ('G', 3)]], 
  'D': [[4, False, False, 0, 0], [('B', 1), ('C', 4), ('H', 4)]], 
  'E': [[3, False, False, 0, 0], [('B', 3), ('C', 1), ('F', 4), ('G', 2)]], 
- 'F': [[2, False, False, 0, 0], [('A', 3), ('E', 4)]],
+ 'F': [[6, False, False, 0, 0], [('A', 3), ('E', 4)]],
  'G': [[3, False, False, 0, 0], [('C', 3), ('E', 2), ('H', 1)]], 
  'H': [[5, False, False, 0, 0], [('D', 4), ('G', 1), ('I', 3)]], 
- 'I': [[2, False, False, 0, 0], [('A', 5), ('H', 3)]]  
+ 'I': [[5, False, False, 0, 0], [('A', 5), ('H', 3)]]  
 }
 
 qlagos = 0
 lagos = set()
 postos = set()
-capacidade = 2
+capacidade = 4
 
 criarPostos(postos, grafo)
 criarLagos(lagos, qlagos, postos, grafo)
@@ -231,10 +248,11 @@ while parada:
  print(f"               Turno: {turno}")
  print("========================================")
  for time in equipes:
+  time.andar(grafo)
   parada = ta_pegando_fogo(grafo)
   if not parada:
+   print("Acabou o fogo no grafo")
    break
-  time.andar(grafo)
   
  for chave in grafo.keys():
   if grafo[chave][0][3] == 1 and grafo[chave][0][0]>0:
@@ -255,4 +273,4 @@ while parada:
  propagacao(grafo)
 
 
-print_grafo(grafo)
+relatorio(grafo, equipes, turno)
