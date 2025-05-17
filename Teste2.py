@@ -126,9 +126,6 @@ class equipe:
     self.capacidade_atual = self.capacidade
     print(f"Reabastecido. Capacidade atual: {self.capacidade_atual}/{self.capacidade}.")
 
-  else:
-   print("Não encontrou uma estação de reabastecimento acessível. Aguardando.")
-
  def apagar(self, grafo):
   print(f"--- Equipe em {self.posicao}: Apagar Fogo ---")
 
@@ -137,7 +134,7 @@ class equipe:
   print(f"Tentando apagar {fogo_atual} de fogo com {self.capacidade_atual} de água.")
 
   if fogo_atual > self.capacidade_atual:
-   grafo[self.posicao][0][0] = max(0,self.capacidade_atual-grafo[self.posicao][0][0])
+   grafo[self.posicao][0][0] -= self.capacidade_atual
    print(f"Água insuficiente. Fogo reduzido para {grafo[self.posicao][0][0]}.")
    self.capacidade_atual = 0
    print("Água acabou.")
@@ -167,7 +164,8 @@ def propagacao(grafo):
       if x:
        if not grafo[vizinho][0][1] and not grafo[vizinho][0][2] and grafo[vizinho][0][3] == 0:
         grafo[vizinho][0][3] = 1
-        print("Novo grafo pegando fogo")
+        print()
+        print(f"vertice {vizinho} pegando fogo🔥")
 
 def ta_pegando_fogo(grafo):
  for i in grafo:
@@ -175,9 +173,22 @@ def ta_pegando_fogo(grafo):
     return 1
  return 0
 
+def print_grafo(grafo):
+  print()
+  for vertice in grafo:
+    print(f"Vertice {vertice} ", end="")
+    if grafo[vertice][0][1] == True:
+      print("é um posto então tá de boa🧑‍🚒")
+    elif grafo[vertice][0][2] == True:
+      print("é um lago então tá de boa🦆")
+    elif grafo[vertice][0][3] == 0:
+      print("nem sequer pegou fogo, parabéns pessoal🎉")
+    elif grafo[vertice][0][3] == -1:
+      print(f"pegou fogo durante {grafo[vertice][0][4]} turnos, porém foi apagado a tempo restando: {grafo[vertice][0][0]} de combustivel😥")
+    elif grafo[vertice][0][3] == 2:
+      print(f"pegou fogo durante {grafo[vertice][0][4]} turnos, e queimou completamente😿")
+  
 # Cria um grafo ponderado. {Nome do vertice : ((valor dentro do vertice, posto, lago, estado do fogo(0 = se nao pegou fogo, 1 se esta pegando fogo, -1 se já pegou fogo, 2 se queimou), Quantidade de combustivel queimado))
-
-
 grafo = {
  'A': [[4, False, False, 0, 0], [('B', 5), ('C', 2), ('F', 3), ('I', 5)]],
  'B': [[4, False, False, 0, 0], [('A', 5), ('D', 1), ('E', 3)]],
@@ -214,19 +225,34 @@ print(equipes)
 parada = 1
 turno = 0
 while parada:
- turno +1
+ turno +=1
+ print()
+ print("========================================")
+ print(f"               Turno: {turno}")
+ print("========================================")
  for time in equipes:
+  parada = ta_pegando_fogo(grafo)
+  if not parada:
+   break
   time.andar(grafo)
- parada = ta_pegando_fogo(grafo)
+  
  for chave in grafo.keys():
-  if grafo[chave][0][3] and grafo[chave][0][0]>0:
+  if grafo[chave][0][3] == 1 and grafo[chave][0][0]>0:
    grafo[chave][0][0] -= 1
    grafo[chave][0][4] += 1
-   if grafo[chave][0][0] == 0 and not grafo[chave][0][3] == -1:
+   if grafo[chave][0][4] == 3 and not grafo[chave][0][3] == -1:
     grafo[chave][0][3] = 2
+    print()
+    print(f"O vertice {chave} parou de pegar fogo pois não foi atendido a tempo🤦‍♂️")
+   elif grafo[chave][0][0] == 0:
+    grafo[chave][0][3] = -1
+    print()
+    print(f"O vertice {chave} parou de pegar fogo pois foi resfriado😎")
+ print()
+ print(equipes)
 
    
  propagacao(grafo)
 
 
-print(grafo)
+print_grafo(grafo)
