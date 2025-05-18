@@ -1,0 +1,14 @@
+{
+    "grafo": [
+        {"nome": "R0", "combustivel": 7, "arestas": [{"destino": "R1", "peso": 2}, {"destino": "R3", "peso": 3}, {"destino": "R5", "peso": 4}]},
+        {"nome": "R1", "combustivel": 6, "arestas": [{"destino": "R0", "peso": 2}, {"destino": "R2", "peso": 3}, {"destino": "R4", "peso": 2}]},
+        {"nome": "R2", "combustivel": 8, "arestas": [{"destino": "R1", "peso": 3}, {"destino": "R6", "peso": 4}, {"destino": "R8", "peso": 3}]},
+        {"nome": "R3", "combustivel": 5, "arestas": [{"destino": "R0", "peso": 3}, {"destino": "R4", "peso": 2}, {"destino": "R7", "peso": 5}]},
+        {"nome": "R4", "combustivel": 7, "arestas": [{"destino": "R1", "peso": 2}, {"destino": "R3", "peso": 2}, {"destino": "R5", "peso": 3}]},
+        {"nome": "R5", "combustivel": 6, "arestas": [{"destino": "R0", "peso": 4}, {"destino": "R4", "peso": 3}, {"destino": "R9", "peso": 2}]},
+        {"nome": "R6", "combustivel": 5, "arestas": [{"destino": "R2", "peso": 4}, {"destino": "R7", "peso": 3}, {"destino": "R8", "peso": 2}]},
+        {"nome": "R7", "combustivel": 9, "arestas": [{"destino": "R3", "peso": 5}, {"destino": "R6", "peso": 3}, {"destino": "R9", "peso": 4}]},
+        {"nome": "R8", "combustivel": 6, "arestas": [{"destino": "R2", "peso": 3}, {"destino": "R6", "peso": 2}, {"destino": "R9", "peso": 3}]},
+        {"nome": "R9", "combustivel": 7, "arestas": [{"destino": "R5", "peso": 2}, {"destino": "R7", "peso": 4}, {"destino": "R8", "peso": 3}]}
+    ]
+}
